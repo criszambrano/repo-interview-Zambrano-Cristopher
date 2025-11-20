@@ -1,0 +1,156 @@
+.page-container {
+  min-height: 100vh;
+  background: #f5f7fa;
+  font-family: 'Segoe UI', sans-serif;
+}
+
+.header {
+  background: white;
+  padding: 1.5rem 2rem;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+  position: relative;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+.logo {
+  font-size: 1.8rem;
+  font-weight: bold;
+  color: #0d6efd;
+}
+
+.main-content {
+  max-width: 1200px;
+  margin: 2rem auto;
+  padding: 0 2rem;
+}
+
+.search-section {
+  margin-bottom: 1.5rem;
+}
+
+.toolbar {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 1rem;
+  color: #6c757d;
+  font-size: 0.95rem;
+}
+
+.results-count {
+  font-weight: 500;
+}
+
+.table-wrapper {
+  background: white;
+  border-radius: 8px;
+  overflow: hidden;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
+}
+
+.table {
+  width: 100%;
+  border-collapse: collapse;
+}
+
+.table th {
+  text-align: left;
+  padding: 1rem 1.5rem;
+  background: #f8f9fa;
+  color: #495057;
+  font-weight: 600;
+  border-bottom: 1px solid #dee2e6;
+}
+
+.table td {
+  padding: 1.2rem 1.5rem;
+  border-bottom: 1px solid #eef0f3;
+}
+
+.product-logo {
+  width: 70px;
+  height: 45px;
+  object-fit: cover;
+  border-radius: 6px;
+}
+
+.fw-medium {
+  font-weight: 500;
+}
+
+.text-muted {
+  color: #6c757d !important;
+}
+
+.table-footer {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 1rem 1.5rem;
+  background: #f8f9fa;
+  border-top: 1px solid #e9ecef;
+  font-size: 0.875rem;
+  color: #495057;
+  flex-wrap: wrap;
+  gap: 1rem;
+}
+
+.pagination-compact {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+}
+
+/* Skeleton */
+.skeleton-row {
+  height: 80px;
+}
+
+.skeleton-logo,
+.skeleton-text,
+.skeleton-dots {
+  background: #e9ecef;
+  border-radius: 6px;
+  animation: pulse 1.5s infinite;
+}
+
+.skeleton-logo {
+  width: 70px;
+  height: 45px;
+}
+
+.skeleton-text.long {
+  width: 220px;
+  height: 16px;
+}
+
+.skeleton-text.medium {
+  width: 300px;
+  height: 16px;
+}
+
+.skeleton-text.short {
+  width: 100px;
+  height: 16px;
+}
+
+.skeleton-dots {
+  width: 30px;
+  height: 30px;
+  border-radius: 50%;
+  margin: 0 auto;
+}
+
+@keyframes pulse {
+
+  0%,
+  100% {
+    opacity: 0.6;
+  }
+
+  50% {
+    opacity: 1;
+  }
+}

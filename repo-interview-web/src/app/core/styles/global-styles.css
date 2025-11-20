@@ -1,0 +1,60 @@
+/* Forms */
+.form-control {
+  width: 320px;
+  max-width: 100%;
+  padding: 0.75rem 1rem;
+  border: 1px solid #ced4da;
+  border-radius: 6px;
+  font-size: 1rem;
+}
+
+.form-select-sm {
+  height: 36px;
+  padding: 0 0.75rem;
+  border: 1px solid #ced4da;
+  border-radius: 6px;
+  background-color: white;
+  font-size: 0.875rem;
+  min-width: 70px;
+}
+
+/* Buttons */
+.btn-primary {
+  background: #ffc107;
+  color: #212529;
+  padding: 0.65rem 1.5rem;
+  border: none;
+  border-radius: 6px;
+  font-weight: 600;
+  font-size: 0.95rem;
+  text-decoration: none;
+  box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+  transition: all 0.2s;
+}
+
+.btn-primary:hover {
+  background: #ffb300;
+  transform: translateY(-1px);
+}
+
+.btn-pagination {
+  width: 36px;
+  height: 36px;
+  border: 1px solid #ced4da;
+  background: white;
+  color: #495057;
+  border-radius: 6px;
+  font-size: 1.1rem;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.btn-pagination:hover:not(:disabled) {
+  background: #f8f9fa;
+}
+
+.btn-pagination:disabled {
+  opacity: 0.4;
+  cursor: not-allowed;
+}
