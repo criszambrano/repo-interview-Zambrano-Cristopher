@@ -1,30 +1,23 @@
 <div class="page-container">
   <header class="header">
     <div class="logo">BANCO</div>
-    <a routerLink="/add" class="btn-primary">Agregar</a>
   </header>
 
   <main class="main-content">
-    <section class="search-section">
-      <input
-        type="text"
-        placeholder="Search..."
-        [ngModel]="searchTerm()"
-        (ngModelChange)="onSearchChange($event)"
-        class="form-control"
-      />
-    </section>
-
-    @if (!loading() && totalResults() > 0) {
-      <section class="toolbar">
-        <span class="results-count">{{ totalResults() }} resultados</span>
-        <select class="form-select-sm" [ngModel]="pageSize()" (change)="onPageSizeChange($event)">
-          <option value="5">5</option>
-          <option value="10">10</option>
-          <option value="20">20</option>
-        </select>
+    <div class="table-header">
+      <section class="search-section">
+        <input
+          type="text"
+          placeholder="Buscar..."
+          [ngModel]="searchTerm()"
+          (ngModelChange)="onSearchChange($event)"
+          class="form-control"
+        />
       </section>
-    }
+      <div>
+        <a routerLink="/add" class="btn-primary">Agregar</a>
+      </div>
+    </div>
 
     <div class="table-wrapper">
       <table class="table">
@@ -39,59 +32,76 @@
           </tr>
         </thead>
         <tbody>
-          @if (loading()) {
-            @for (i of [1,2,3,4,5,6,7,8,9,10]; track i) {
-              <tr class="skeleton-row">
-                <td><div class="skeleton-logo"></div></td>
-                <td><div class="skeleton-text long"></div></td>
-                <td><div class="skeleton-text medium"></div></td>
-                <td><div class="skeleton-text short"></div></td>
-                <td><div class="skeleton-text short"></div></td>
-                <td><div class="skeleton-dots"></div></td>
-              </tr>
-            }
-          }
-
-          @if (error()) {
-            <tr><td colspan="6" class="text-danger text-center py-5">Error al cargar productos</td></tr>
-          }
-
-          @if (!loading() && totalResults() === 0) {
-            <tr><td colspan="6" class="text-muted text-center py-5">No se encontraron productos</td></tr>
-          }
-
-          @for (product of paginatedProducts(); track product.id) {
-            <tr>
-              <td><img [src]="product.logo" alt="Logo" class="product-logo" /></td>
-              <td class="fw-medium">{{ product.name }}</td>
-              <td class="text-muted">{{ product.description }}</td>
-              <td>{{ product.date_release | date:'dd/MM/yyyy' }}</td>
-              <td>{{ product.date_revision | date:'dd/MM/yyyy' }}</td>
-              <td class="text-center text-muted fs-4">⋮</td>
-            </tr>
+          @if (loading()) { @for (i of [1,2,3,4,5,6,7,8,9,10]; track i) {
+          <tr class="skeleton-row">
+            <td><div class="skeleton-logo"></div></td>
+            <td><div class="skeleton-text long"></div></td>
+            <td><div class="skeleton-text medium"></div></td>
+            <td><div class="skeleton-text short"></div></td>
+            <td><div class="skeleton-text short"></div></td>
+            <td><div class="skeleton-dots"></div></td>
+          </tr>
+          } } @if (error()) {
+          <tr>
+            <td colspan="6" class="text-danger">Error al cargar productos</td>
+          </tr>
+          } @if (!loading() && totalResults() === 0) {
+          <tr>
+            <td colspan="6" class="text-muted">No se encontraron productos</td>
+          </tr>
+          } @for (product of paginatedProducts(); track product.id) {
+          <tr>
+            <td><img [src]="product.logo" alt="Logo" class="product-logo" /></td>
+            <td>{{ product.name }}</td>
+            <td>{{ product.description }}</td>
+            <td>{{ product.date_release | date : 'dd/MM/yyyy' }}</td>
+            <td>{{ product.date_revision | date : 'dd/MM/yyyy' }}</td>
+            <td class="text-bold">⋮</td>
+          </tr>
           }
         </tbody>
       </table>
     </div>
 
     @if (!loading() && totalResults() > 0) {
-      <footer class="table-footer">
+    <footer class="table-footer">
       <span class="results-count">{{ totalResults() }} resultados</span>
 
-        <div class="pagination-compact">
-          <button class="btn-pagination" (click)="goToPage(currentPage() - 1)" [disabled]="currentPage() === 1">←</button>
-          
-          <select class="form-select-sm" [value]="currentPage()" (change)="goToPage(+$any($event.target).value)">
-            @for (page of pageNumbers(); track page) {
-              <option [value]="page">{{ page }}</option>
-            }
-          </select>
+      <div class="pagination-compact">
+        <button
+          class="btn-pagination"
+          (click)="goToPage(currentPage() - 1)"
+          [disabled]="currentPage() === 1"
+        >
+          ←
+        </button>
 
-          <span class="text-muted mx-2">de {{ totalPages() }}</span>
-          
-          <button class="btn-pagination" (click)="goToPage(currentPage() + 1)" [disabled]="currentPage() === totalPages()">→</button>
-        </div>
-      </footer>
+        <select
+          class="form-select-sm"
+          [value]="currentPage()"
+          (change)="goToPage(+$any($event.target).value)"
+        >
+          @for (page of pageNumbers(); track page) {
+          <option [value]="page">{{ page }}</option>
+          }
+        </select>
+        <button
+          class="btn-pagination"
+          (click)="goToPage(currentPage() + 1)"
+          [disabled]="currentPage() === totalPages()"
+        >
+          →
+        </button>
+      </div>
+
+      <section class="toolbar">
+        <select class="form-select-sm" [ngModel]="pageSize()" (change)="onPageSizeChange($event)">
+          <option value="5">5</option>
+          <option value="10">10</option>
+          <option value="20">20</option>
+        </select>
+      </section>
+    </footer>
     }
   </main>
 </div>

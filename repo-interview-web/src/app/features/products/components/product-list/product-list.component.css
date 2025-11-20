@@ -17,7 +17,7 @@
 .logo {
   font-size: 1.8rem;
   font-weight: bold;
-  color: #0d6efd;
+  color: #021B53;
 }
 
 .main-content {
@@ -26,13 +26,20 @@
   padding: 0 2rem;
 }
 
+.table-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
 .search-section {
   margin-bottom: 1.5rem;
+  align-items: center;
 }
 
 .toolbar {
   display: flex;
-  justify-content: space-between;
+  justify-content: flex-end;
   align-items: center;
   margin-bottom: 1rem;
   color: #6c757d;
@@ -45,7 +52,7 @@
 
 .table-wrapper {
   background: white;
-  border-radius: 8px;
+  padding: 2em;
   overflow: hidden;
   box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
 }
@@ -56,7 +63,7 @@
 }
 
 .table th {
-  text-align: left;
+  text-align: center;
   padding: 1rem 1.5rem;
   background: #f8f9fa;
   color: #495057;
@@ -82,6 +89,16 @@
 
 .text-muted {
   color: #6c757d !important;
+}
+
+.text-bold {
+  font-weight: 700 !important;
+  font-size: 1.5rem;
+  font-weight: bold;
+}
+
+.text-bold:hover {
+  cursor: pointer;
 }
 
 .table-footer {

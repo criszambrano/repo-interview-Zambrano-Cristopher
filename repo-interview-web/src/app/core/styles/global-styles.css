@@ -20,7 +20,7 @@
 
 /* Buttons */
 .btn-primary {
-  background: #ffc107;
+  background: #F5DF66;
   color: #212529;
   padding: 0.65rem 1.5rem;
   border: none;
@@ -33,8 +33,13 @@
 }
 
 .btn-primary:hover {
-  background: #ffb300;
-  transform: translateY(-1px);
+  background: #ffe658;
+  cursor: pointer;
+}
+
+.btn-primary:disabled {
+  background-color: #FDF1A4;
+  cursor: not-allowed;
 }
 
 .btn-pagination {
@@ -51,6 +56,7 @@
 }
 
 .btn-pagination:hover:not(:disabled) {
+  cursor: pointer;
   background: #f8f9fa;
 }
 
