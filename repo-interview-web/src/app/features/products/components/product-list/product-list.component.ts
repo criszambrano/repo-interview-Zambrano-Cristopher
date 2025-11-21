@@ -1,15 +1,15 @@
-import { Component, signal, computed, inject, OnInit } from '@angular/core';
+import { Component, signal, computed, inject, OnInit, HostListener } from '@angular/core';
 import { ProductService } from '../../../../core/services/product.service';
 import { Product } from '../../models/product.interface';
 import { FormsModule } from '@angular/forms';
 import { CommonModule, DatePipe } from '@angular/common';
-import { RouterLink } from '@angular/router';
+import { Router } from '@angular/router';
 import { debounceTime, distinctUntilChanged, Subject } from 'rxjs';
 
 @Component({
   selector: 'app-product-list',
   standalone: true,
-  imports: [CommonModule, FormsModule, DatePipe, RouterLink],
+  imports: [CommonModule, FormsModule, DatePipe],
   templateUrl: './product-list.component.html',
   styleUrls: [
     '../../../../core/styles/global-styles.css',
@@ -18,6 +18,7 @@ import { debounceTime, distinctUntilChanged, Subject } from 'rxjs';
 })
 export class ProductListComponent implements OnInit {
   private productService = inject(ProductService);
+  private router = inject(Router);
 
   products = signal<Product[]>([]);
   loading = signal(true);
@@ -25,6 +26,14 @@ export class ProductListComponent implements OnInit {
   searchTerm = signal('');
   pageSize = signal(10);
   currentPage = signal(1);
+  openMenuId = signal<string | null>(null);
+  deleteCandidate = signal<string | null>(null);
+
+  deleteProductName = computed(() => {
+    const id = this.deleteCandidate();
+    if (!id) return '';
+    return this.products().find(p => p.id === id)?.name || 'este producto';
+  });
 
   private searchSubject = new Subject<string>();
 
@@ -75,6 +84,48 @@ export class ProductListComponent implements OnInit {
         this.loading.set(false);
       }
     });
+  }
+
+  @HostListener('document:click')
+  onDocumentClick() {
+    this.openMenuId.set(null);
+  }
+
+  toggleMenu($event: any, id: string) {
+    $event.stopPropagation();
+    this.openMenuId.set(this.openMenuId() === id ? null : id);
+  }
+
+  openDeleteModal($event: any, id: string) {
+    $event.stopPropagation();
+    this.openMenuId.set(null);
+    this.deleteCandidate.set(id);
+  }
+
+  onAdd() {
+    this.router.navigate(['/add']);
+  }
+
+  onEdit(id: string) {
+    this.openMenuId.set(null);
+    this.router.navigate(['/edit', id]);
+  }
+
+  confirmDelete() {
+    const id = this.deleteCandidate();
+    if (!id) return;
+
+    this.productService.delete(id).subscribe({
+      next: () => {
+        this.products.set(this.products().filter(p => p.id !== id));
+        this.deleteCandidate.set(null);
+      },
+      error: () => alert('Error al eliminar el producto')
+    });
+  }
+
+  cancelDelete() {
+    this.deleteCandidate.set(null);
   }
 
   onSearchChange(value: string) {

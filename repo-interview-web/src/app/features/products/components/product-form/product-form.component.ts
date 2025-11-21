@@ -1,4 +1,4 @@
-import { Component, inject, signal, computed, effect, Output, EventEmitter } from '@angular/core';
+import { Component, inject, signal } from '@angular/core';
 import { ProductService } from '../../../../core/services/product.service';
 import { Product } from '../../models/product.interface';
 import { FormsModule } from '@angular/forms';
@@ -84,14 +84,14 @@ export class ProductFormComponent {
     const f = this.form();
     const errs: Record<string, string> = {};
 
-    if (!f.id || f.id.length < 5 || f.id.length > 10) {
-      errs['id'] = 'Debe tener entre 5 y 10 caracteres';
+    if (!f.id || f.id.length < 3 || f.id.length > 10) {
+      errs['id'] = 'Requerido, debe tener entre 3 y 10 caracteres';
     }
-    if (!f.name || f.name.length < 3) {
-      errs['name'] = 'Requerido, mínimo 3 caracteres';
+    if (!f.name || f.name.length < 5 || f.name.length > 100) {
+      errs['name'] = 'Requerido, debe tener entre 5 y 100 caracteres';
     }
     if (!f.description || f.description.length < 10 || f.description.length > 200) {
-      errs['description'] = 'Debe tener entre 10 y 200 caracteres';
+      errs['description'] = 'Requerido, debe tener entre 10 y 200 caracteres';
     }
     if (!f.logo) errs['logo'] = 'Este campo es requerido';
     if (!f.date_release) errs['date_release'] = 'Requerido';
@@ -140,5 +140,9 @@ export class ProductFormComponent {
       date_release: new Date(), date_revision: new Date()
     });
     this.errors.set({});
+  }
+
+  onBackToList() {
+    this.router.navigate(['/']);
   }
 }

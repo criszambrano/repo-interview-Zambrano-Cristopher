@@ -1,8 +1,4 @@
 <div class="page-container">
-  <header class="header">
-    <div class="logo">BANCO</div>
-  </header>
-
   <main class="main-content">
     <div class="table-header">
       <section class="search-section">
@@ -15,55 +11,74 @@
         />
       </section>
       <div>
-        <!-- <button class="btn-primary" (click)="showForm()">Agregar</button> -->
-        <a routerLink="/add" class="btn-primary">Agregar</a>
+        <button class="btn-primary" (click)="onAdd()">Agregar</button>
       </div>
     </div>
 
     <div class="table-wrapper">
-      <table class="table">
-        <thead>
-          <tr>
-            <th>Logo</th>
-            <th>Nombre del producto</th>
-            <th>Descripción</th>
-            <th>Fecha de liberación</th>
-            <th>Fecha de revisión</th>
-            <th></th>
-          </tr>
-        </thead>
-        <tbody>
-          @if (loading()) { @for (i of [1,2,3,4,5,6,7,8,9,10]; track i) {
-          <tr class="skeleton-row">
-            <td><div class="skeleton-logo"></div></td>
-            <td><div class="skeleton-text long"></div></td>
-            <td><div class="skeleton-text medium"></div></td>
-            <td><div class="skeleton-text short"></div></td>
-            <td><div class="skeleton-text short"></div></td>
-            <td><div class="skeleton-dots"></div></td>
-          </tr>
-          } } @if (error()) {
-          <tr>
-            <td colspan="6" class="text-danger">Error al cargar productos</td>
-          </tr>
-          } @if (!loading() && totalResults() === 0) {
-          <tr>
-            <td colspan="6" class="text-muted">No se encontraron productos</td>
-          </tr>
-          } @for (product of paginatedProducts(); track product.id) {
-          <tr>
-            <td><img [src]="product.logo" alt="Logo" class="product-logo" /></td>
-            <td>{{ product.name }}</td>
-            <td>{{ product.description }}</td>
-            <td>{{ product.date_release | date : 'dd/MM/yyyy' }}</td>
-            <td>{{ product.date_revision | date : 'dd/MM/yyyy' }}</td>
-            <td class="text-bold">⋮</td>
-          </tr>
-          }
-        </tbody>
-      </table>
+      <div class="table-header-row">
+        <div class="th">Logo</div>
+        <div class="th">Nombre del producto</div>
+        <div class="th">Descripción</div>
+        <div class="th">Fecha de liberación</div>
+        <div class="th">Fecha de revisión</div>
+        <div class="th"></div>
+      </div>
+      @if (loading()) { @for (i of [1,2,3,4,5,6,7,8,9,10]; track i) {
+      <div class="product-card skeleton">
+        <div class="skeleton-logo"></div>
+        <div class="product-info">
+          <div class="skeleton-text long"></div>
+          <div class="skeleton-text medium"></div>
+        </div>
+        <div class="dates">
+          <div class="skeleton-text short"></div>
+          <div class="skeleton-text short"></div>
+        </div>
+        <div class="options-cell"><div class="skeleton-dots"></div></div>
+      </div>
+      } } @if (error()) {
+      <div class="empty-state">
+        <p class="text-danger">Error al cargar productos</p>
+      </div>
+      } @if (!loading() && totalResults() === 0) {
+      <div class="empty-state">
+        <p class="text-muted">No se encontraron productos</p>
+      </div>
+      } @for (product of paginatedProducts(); track product.id) {
+      <div class="product-card">
+        <img [src]="product.logo" alt="Logo" class="product-logo" />
 
-      @if (!loading() && totalResults() > 0) {
+        <div class="product-info name-cell">
+          <div class="product-name">{{ product.name }}</div>
+        </div>
+
+        <div class="description-cell">
+          <p class="description">{{ product.description }}</p>
+        </div>
+
+        <div class="dates">
+          <div>{{ product.date_release | date : 'dd/MM/yyyy' }}</div>
+        </div>
+
+        <div class="dates">
+          <div>{{ product.date_revision | date : 'dd/MM/yyyy' }}</div>
+        </div>
+
+        <div class="options-cell">
+          <button class="options-button" (click)="toggleMenu($event, product.id)">⋮</button>
+
+          @if (openMenuId() === product.id) {
+          <div class="options-menu" (click)="$event.stopPropagation()">
+            <button class="menu-item" (click)="onEdit(product.id)">Editar</button>
+            <button class="menu-item text-danger" (click)="openDeleteModal($event, product.id)">
+              Eliminar
+            </button>
+          </div>
+          }
+        </div>
+      </div>
+      } @if (!loading() && totalResults() > 0) {
       <footer class="table-footer">
         <span class="results-count">{{ totalResults() }} resultados</span>
 
@@ -105,4 +120,20 @@
       }
     </div>
   </main>
+
+  @if (deleteCandidate()) {
+  <div class="modal-overlay" (click)="cancelDelete()">
+    <div class="modal-content" (click)="$event.stopPropagation()">
+      <p>
+        ¿Estás seguro de eliminar el producto
+        <strong>{{ deleteProductName() }}</strong
+        >?
+      </p>
+      <div class="modal-actions">
+        <button class="btn-secondary" (click)="cancelDelete()">Cancelar</button>
+        <button class="btn-primary" (click)="confirmDelete()">Confirmar</button>
+      </div>
+    </div>
+  </div>
+  }
 </div>
