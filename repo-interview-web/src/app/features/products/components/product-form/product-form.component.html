@@ -25,7 +25,8 @@
         <label>Nombre</label>
         <input
           type="text"
-          [(ngModel)]="form()['name']"
+          [ngModel]="form()['name']"
+          (ngModelChange)="onFieldChange('name', $event)"
           name="name"
           class="form-control"
           [class.is-invalid]="errors()['name']"
@@ -37,7 +38,8 @@
         <label>Descripción</label>
         <input
           type="text"
-          [(ngModel)]="form()['description']"
+          [ngModel]="form()['description']"
+          (ngModelChange)="onFieldChange('description', $event)"
           name="description"
           class="form-control"
           [class.is-invalid]="errors()['description']"
@@ -50,7 +52,8 @@
         <label>Logo</label>
         <input
           type="url"
-          [(ngModel)]="form()['logo']"
+          [ngModel]="form()['logo']"
+          (ngModelChange)="onFieldChange('logo', $event)"
           name="logo"
           class="form-control"
           [class.is-invalid]="errors()['logo']"
@@ -66,8 +69,8 @@
           name="date_release"
           class="form-control"
           (ngModelChange)="onDateReleaseChange($event)"
+          [class.is-invalid]="errors()['date_release']"
         />
-
         @if (errors()['date_release']) {
         <small class="text-danger">{{ errors()['date_release'] }}</small> }
       </div>
@@ -86,14 +89,7 @@
 
     <div class="form-actions">
       <button type="button" (click)="onReset()" class="btn-secondary">Reiniciar</button>
-      <button
-        type="submit"
-        class="btn-primary"
-        [disabled]="hasErrors()"
-        [class.btn-disabled]="hasErrors()"
-      >
-        Enviar
-      </button>
+      <button type="submit" class="btn-primary">Enviar</button>
     </div>
   </form>
 </div>

@@ -2,7 +2,7 @@ import { Component, computed, inject, signal } from '@angular/core';
 import { ProductService } from '../../../../core/services/product.service';
 import { Product } from '../../models/product.interface';
 import { FormsModule } from '@angular/forms';
-import { CommonModule, DatePipe } from '@angular/common';
+import { CommonModule } from '@angular/common';
 import { ActivatedRoute, Router } from '@angular/router';
 import { debounceTime, switchMap } from 'rxjs/operators';
 import { Subject } from 'rxjs';
@@ -36,6 +36,7 @@ export class ProductFormComponent {
   });
 
   errors = signal<Record<string, string>>({});
+  idDuplicationError = signal<string | null>(null);
 
   private idCheckSubject = new Subject<string>();
 
@@ -53,12 +54,11 @@ export class ProductFormComponent {
       switchMap(id => this.productService.verifyId(id))
     ).subscribe(exists => {
       if (exists && !this.isEditMode()) {
-        this.errors.update(errs => ({ ...errs, id: 'El ID ya existe' }));
-      } else if (this.form().id.length >= 5) {
-        const newErrors = { ...this.errors() };
-        delete newErrors['id'];
-        this.errors.set(newErrors);
+        this.idDuplicationError.set('El ID ya existe');
+      } else {
+        this.idDuplicationError.set(null);
       }
+      this.validateForm();
     });
   }
 
@@ -76,6 +76,8 @@ export class ProductFormComponent {
 
   onIdChange(value: string) {
     this.form.update(f => ({ ...f, id: value.trim() }));
+    this.validateForm();
+
     if (value.length >= 5 && !this.isEditMode()) {
       this.idCheckSubject.next(value);
     }
@@ -86,9 +88,13 @@ export class ProductFormComponent {
     const errs: Record<string, string> = {};
     const today = new Date();
     today.setHours(0, 0, 0, 0);
+    const releaseDate = new Date(f.date_release);
+    releaseDate.setHours(0, 0, 0, 0);
 
     if (!f.id || f.id.length < 3 || f.id.length > 10) {
       errs['id'] = 'Requerido, debe tener entre 3 y 10 caracteres';
+    } else if (this.idDuplicationError()) {
+      errs['id'] = this.idDuplicationError()!;
     }
     if (!f.name || f.name.length < 5 || f.name.length > 100) {
       errs['name'] = 'Requerido, debe tener entre 5 y 100 caracteres';
@@ -98,7 +104,7 @@ export class ProductFormComponent {
     }
     if (!f.logo) errs['logo'] = 'Este campo es requerido';
     if (!f.date_release) errs['date_release'] = 'Requerido';
-    if (new Date(f.date_release) < today) {
+    if (releaseDate.getTime() < today.getTime()) {
       errs['date_release'] = 'La fecha debe ser igual o mayor a hoy';
     }
     if (!f.date_revision) errs['date_revision'] = 'Requerido';
@@ -109,7 +115,6 @@ export class ProductFormComponent {
 
   onDateReleaseChange(value: string) {
     const release = this.toLocalDate(value);
-
     const revision = new Date(release);
     revision.setFullYear(revision.getFullYear() + 1);
 
@@ -118,8 +123,15 @@ export class ProductFormComponent {
       date_release: release,
       date_revision: revision
     }));
+
+    this.validateForm();
   }
 
+  onFieldChange(field: keyof Product, value: any) {
+    this.form.update(f => ({ ...f, [field]: value }));
+
+    this.validateForm();
+  }
 
   onSubmit() {
     if (!this.validateForm()) return;

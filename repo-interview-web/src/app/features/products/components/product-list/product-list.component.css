@@ -164,7 +164,7 @@
   }
 }
 
-/* MÓVIL */
+/* MOBILE */
 @media (max-width: 799px) {
   .main-content {
     padding: 0;
@@ -284,7 +284,7 @@
   }
 }
 
-/* Desktop skeleton */
+/* DESKTOP SKELETON */
 @media (min-width: 800px) {
   .skeleton .skeleton-logo {
     width: 70px;
@@ -315,7 +315,7 @@
   }
 }
 
-/* Mobile skeleton */
+/* MOBILE SKELETON */
 @media (max-width: 799px) {
   .skeleton .skeleton-logo {
     width: 90px;

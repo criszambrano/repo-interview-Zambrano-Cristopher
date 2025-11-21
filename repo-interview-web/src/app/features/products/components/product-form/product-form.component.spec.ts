@@ -79,11 +79,9 @@ describe('ProductFormComponent', () => {
     });
 
     // TEST: Longitud del ID
-    it('should validate ID length (3-10 characters)', async () => {
+    it('should validate ID length (3-10 characters) and show correct error message', async () => {
         await TestBed.configureTestingModule({
-            imports: [
-                ProductFormComponent,
-            ],
+            imports: [ProductFormComponent],
             providers: [
                 { provide: ProductService, useValue: productServiceMock },
                 { provide: Router, useValue: routerMock },
@@ -95,21 +93,18 @@ describe('ProductFormComponent', () => {
         component = fixture.componentInstance;
         fixture.detectChanges();
 
-        // Caso 1: Longitud corta (2 caracteres)
+        // Caso inválido: menos de 3 caracteres
         component.onIdChange('ab');
-        component.validateForm();
         fixture.detectChanges();
-        expect(component.errors()['id']).toContain('entre 3 y 10');
+        expect(component.errors()['id']).toBe('Requerido, debe tener entre 3 y 10 caracteres');
 
-        // Caso 2: Longitud larga (11 caracteres)
+        // Caso inválido: más de 10 caracteres
         component.onIdChange('a'.repeat(11));
-        component.validateForm();
         fixture.detectChanges();
-        expect(component.errors()['id']).toContain('entre 3 y 10');
+        expect(component.errors()['id']).toBe('Requerido, debe tener entre 3 y 10 caracteres');
 
-        // Caso 3: Longitud válida (6 caracteres)
-        component.onIdChange('abc123');
-        component.validateForm();
+        // Caso válido
+        component.onIdChange('valid123');
         fixture.detectChanges();
         expect(component.errors()['id']).toBeUndefined();
     });

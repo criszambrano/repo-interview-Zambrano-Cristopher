@@ -3,7 +3,6 @@ import { ProductListComponent } from './product-list.component';
 import { ProductService } from '../../../../core/services/product.service';
 import { Router } from '@angular/router';
 import { of } from 'rxjs';
-import { signal } from '@angular/core';
 
 const mockProducts = [
     {
@@ -49,12 +48,14 @@ describe('ProductListComponent', () => {
         expect(component).toBeTruthy();
     });
 
+    // TEST: Carga inicial de productos
     it(' load products on init', () => {
         expect(productServiceMock.getAll).toHaveBeenCalled();
         expect(component.products().length).toBe(1);
         expect(component.loading()).toBe(false);
     });
 
+    // TEST: Filtrar productos por término de búsqueda
     it(' filter products by search term', fakeAsync(() => {
         component.onSearchChange('crédito');
         tick(300);
@@ -65,11 +66,13 @@ describe('ProductListComponent', () => {
         expect(component.filteredProducts().length).toBe(0);
     }));
 
+    // TEST: Cambiar número de datos por página
     it(' change page size', () => {
         component.onPageSizeChange({ target: { value: '20' } } as any);
         expect(component.pageSize()).toBe(20);
     });
 
+    // TEST: Abrir y cerrar modal de eliminación
     it(' open and close delete modal', () => {
         component.openDeleteModal(new MouseEvent('click'), 'trj-crd');
         expect(component.deleteCandidate()).toBe('trj-crd');
@@ -78,6 +81,7 @@ describe('ProductListComponent', () => {
         expect(component.deleteCandidate()).toBeNull();
     });
 
+    // TEST: Eliminar producto y actualizar lista
     it(' delete product and update list', fakeAsync(() => {
         component.openDeleteModal(new MouseEvent('click'), 'trj-crd');
         component.confirmDelete();
@@ -87,6 +91,7 @@ describe('ProductListComponent', () => {
         expect(component.products().length).toBe(0);
     }));
 
+    // TEST: Navegar a añadir y editar
     it(' navigate to add and edit', () => {
         component.onAdd();
         expect(routerMock.navigate).toHaveBeenCalledWith(['/add']);

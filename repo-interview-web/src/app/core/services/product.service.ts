@@ -3,11 +3,12 @@ import { HttpClient } from '@angular/common/http';
 import { Product } from '../../features/products/models/product.interface';
 import { catchError, map } from 'rxjs/operators';
 import { of } from 'rxjs';
+import { environment } from '../../../environments/environment';
 
 @Injectable({ providedIn: 'root' })
 export class ProductService {
   private http = inject(HttpClient);
-  private apiUrl = 'http://localhost:3002/bp/products';
+  private apiUrl = environment.appApiUrl;
 
   getAll() {
     return this.http.get<{ data: Product[] }>(this.apiUrl).pipe(
