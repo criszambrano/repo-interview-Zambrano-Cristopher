@@ -27,7 +27,6 @@ Buenas trades, en este readme detallo las tecnologías, funcionalidades y requis
 ## Cobertura de pruebas
 ```
 npm test -- --coverage
-Resultado: 74.15%
 15 tests unitarios aprobados
 ```
 ## Cómo ejecutar
