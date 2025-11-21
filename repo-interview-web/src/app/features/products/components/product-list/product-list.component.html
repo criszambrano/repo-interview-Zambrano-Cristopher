@@ -15,6 +15,7 @@
         />
       </section>
       <div>
+        <!-- <button class="btn-primary" (click)="showForm()">Agregar</button> -->
         <a routerLink="/add" class="btn-primary">Agregar</a>
       </div>
     </div>
@@ -61,47 +62,47 @@
           }
         </tbody>
       </table>
+
+      @if (!loading() && totalResults() > 0) {
+      <footer class="table-footer">
+        <span class="results-count">{{ totalResults() }} resultados</span>
+
+        <div class="pagination-compact">
+          <button
+            class="btn-pagination"
+            (click)="goToPage(currentPage() - 1)"
+            [disabled]="currentPage() === 1"
+          >
+            ←
+          </button>
+
+          <select
+            class="form-select-sm"
+            [value]="currentPage()"
+            (change)="goToPage(+$any($event.target).value)"
+          >
+            @for (page of pageNumbers(); track page) {
+            <option [value]="page">{{ page }}</option>
+            }
+          </select>
+          <button
+            class="btn-pagination"
+            (click)="goToPage(currentPage() + 1)"
+            [disabled]="currentPage() === totalPages()"
+          >
+            →
+          </button>
+        </div>
+
+        <section class="toolbar">
+          <select class="form-select-sm" [ngModel]="pageSize()" (change)="onPageSizeChange($event)">
+            <option value="5">5</option>
+            <option value="10">10</option>
+            <option value="20">20</option>
+          </select>
+        </section>
+      </footer>
+      }
     </div>
-
-    @if (!loading() && totalResults() > 0) {
-    <footer class="table-footer">
-      <span class="results-count">{{ totalResults() }} resultados</span>
-
-      <div class="pagination-compact">
-        <button
-          class="btn-pagination"
-          (click)="goToPage(currentPage() - 1)"
-          [disabled]="currentPage() === 1"
-        >
-          ←
-        </button>
-
-        <select
-          class="form-select-sm"
-          [value]="currentPage()"
-          (change)="goToPage(+$any($event.target).value)"
-        >
-          @for (page of pageNumbers(); track page) {
-          <option [value]="page">{{ page }}</option>
-          }
-        </select>
-        <button
-          class="btn-pagination"
-          (click)="goToPage(currentPage() + 1)"
-          [disabled]="currentPage() === totalPages()"
-        >
-          →
-        </button>
-      </div>
-
-      <section class="toolbar">
-        <select class="form-select-sm" [ngModel]="pageSize()" (change)="onPageSizeChange($event)">
-          <option value="5">5</option>
-          <option value="10">10</option>
-          <option value="20">20</option>
-        </select>
-      </section>
-    </footer>
-    }
   </main>
 </div>

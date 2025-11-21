@@ -3,12 +3,13 @@ import { ProductService } from '../../../../core/services/product.service';
 import { Product } from '../../models/product.interface';
 import { FormsModule } from '@angular/forms';
 import { CommonModule, DatePipe } from '@angular/common';
+import { RouterLink } from '@angular/router';
 import { debounceTime, distinctUntilChanged, Subject } from 'rxjs';
 
 @Component({
   selector: 'app-product-list',
   standalone: true,
-  imports: [CommonModule, FormsModule, DatePipe],
+  imports: [CommonModule, FormsModule, DatePipe, RouterLink],
   templateUrl: './product-list.component.html',
   styleUrls: [
     '../../../../core/styles/global-styles.css',
@@ -90,4 +91,5 @@ export class ProductListComponent implements OnInit {
       this.currentPage.set(page);
     }
   }
+
 }

@@ -1,0 +1,76 @@
+.form-container {
+  max-width: 800px;
+  margin: 2rem auto;
+  background: white;
+  border-radius: 12px;
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
+  overflow: hidden;
+}
+
+.form-header {
+  background: #f8f9fa;
+  padding: 1.5rem 2rem;
+  border-bottom: 1px solid #e9ecef;
+}
+
+.form-header h2 {
+  margin: 0;
+  font-size: 2.5rem;
+  color: #212529;
+  text-align: center;
+}
+
+.product-form {
+  padding: 2rem;
+}
+
+.form-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 1.5rem;
+  margin-bottom: 2rem;
+}
+
+.form-group label {
+  display: block;
+  margin-bottom: 0.5rem;
+  font-weight: 500;
+  font-weight: bold;
+  color: #495057;
+}
+
+.form-control {
+  width: 90%;
+  padding: 0.75rem 1rem;
+  border: 1px solid #73767a;
+  border-radius: 6px;
+  font-size: 1rem;
+}
+
+.form-group .disabled-label {
+  color: #565657d1;
+}
+
+.form-control.is-invalid {
+  border-color: #dc3545;
+}
+
+.form-control:disabled {
+  background: #eaecee7e;
+  opacity: 0.7;
+}
+
+.text-danger {
+  color: #dc3545 !important;
+  font-size: 0.875rem;
+  margin-top: 0.25rem;
+  display: block;
+}
+
+.form-actions {
+  display: flex;
+  gap: 5rem;
+  padding-top: 1rem;
+  border-top: 1px solid #e9ecef;
+  justify-content: center;
+}

@@ -1,0 +1,92 @@
+<div class="form-container">
+  <header class="form-header">
+    <h2>Formulario de Registro</h2>
+  </header>
+
+  <form (ngSubmit)="onSubmit()" class="product-form">
+    <div class="form-grid">
+      <div class="form-group">
+        <label>ID</label>
+        <input
+          type="text"
+          name="id"
+          [(ngModel)]="form()['id']"
+          (ngModelChange)="onIdChange($event)"
+          [disabled]="isEditMode()"
+          class="form-control"
+          [class.is-invalid]="errors()['id']"
+        />
+        @if (errors()['id']) {
+        <small class="text-danger">{{ errors()['id'] }}</small>
+        }
+      </div>
+
+      <div class="form-group">
+        <label>Nombre</label>
+        <input
+          type="text"
+          [(ngModel)]="form()['name']"
+          name="name"
+          class="form-control"
+          [class.is-invalid]="errors()['name']"
+        />
+        @if (errors()['name']) { <small class="text-danger">{{ errors()['name'] }}</small> }
+      </div>
+
+      <div class="form-group">
+        <label>Descripción</label>
+        <input
+          type="text"
+          [(ngModel)]="form()['description']"
+          name="description"
+          class="form-control"
+          [class.is-invalid]="errors()['description']"
+        />
+        @if (errors()['description']) {
+        <small class="text-danger">{{ errors()['description'] }}</small> }
+      </div>
+
+      <div class="form-group">
+        <label>Logo</label>
+        <input
+          type="url"
+          [(ngModel)]="form()['logo']"
+          name="logo"
+          class="form-control"
+          [class.is-invalid]="errors()['logo']"
+        />
+        @if (errors()['logo']) { <small class="text-danger">{{ errors()['logo'] }}</small> }
+      </div>
+
+      <div class="form-group">
+        <label>Fecha Liberación</label>
+        <input
+          type="date"
+          [ngModel]="form().date_release | date : 'yyyy-MM-dd'"
+          name="date_release"
+          class="form-control"
+          (ngModelChange)="onDateReleaseChange($event)"
+        />
+
+        @if (errors()['date_release']) {
+        <small class="text-danger">{{ errors()['date_release'] }}</small> }
+      </div>
+
+      <div class="form-group">
+        <label class="disabled-label">Fecha Revisión</label>
+        <input
+          type="date"
+          [ngModel]="form().date_revision | date : 'yyyy-MM-dd'"
+          name="date_revision"
+          class="form-control"
+          disabled
+        />
+      </div>
+    </div>
+
+    <div class="form-actions">
+      <button type="button" (click)="onReset()" class="btn-secondary">Reiniciar</button>
+      <button type="submit" class="btn-primary">Enviar</button>
+    </div>
+  </form>
+</div>
