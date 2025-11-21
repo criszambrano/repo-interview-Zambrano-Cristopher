@@ -1,4 +1,4 @@
-import { Component, inject, signal } from '@angular/core';
+import { Component, computed, inject, signal } from '@angular/core';
 import { ProductService } from '../../../../core/services/product.service';
 import { Product } from '../../models/product.interface';
 import { FormsModule } from '@angular/forms';
@@ -24,6 +24,7 @@ export class ProductFormComponent {
 
   isEditMode = signal(false);
   productId = signal<string>('');
+  hasErrors = computed(() => Object.keys(this.errors()).length > 0);
 
   form = signal<Product>({
     id: '',
@@ -83,6 +84,8 @@ export class ProductFormComponent {
   validateForm(): boolean {
     const f = this.form();
     const errs: Record<string, string> = {};
+    const today = new Date();
+    today.setHours(0, 0, 0, 0);
 
     if (!f.id || f.id.length < 3 || f.id.length > 10) {
       errs['id'] = 'Requerido, debe tener entre 3 y 10 caracteres';
@@ -95,6 +98,9 @@ export class ProductFormComponent {
     }
     if (!f.logo) errs['logo'] = 'Este campo es requerido';
     if (!f.date_release) errs['date_release'] = 'Requerido';
+    if (new Date(f.date_release) < today) {
+      errs['date_release'] = 'La fecha debe ser igual o mayor a hoy';
+    }
     if (!f.date_revision) errs['date_revision'] = 'Requerido';
 
     this.errors.set(errs);

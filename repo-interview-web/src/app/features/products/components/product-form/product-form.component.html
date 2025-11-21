@@ -86,7 +86,14 @@
 
     <div class="form-actions">
       <button type="button" (click)="onReset()" class="btn-secondary">Reiniciar</button>
-      <button type="submit" class="btn-primary">Enviar</button>
+      <button
+        type="submit"
+        class="btn-primary"
+        [disabled]="hasErrors()"
+        [class.btn-disabled]="hasErrors()"
+      >
+        Enviar
+      </button>
     </div>
   </form>
 </div>

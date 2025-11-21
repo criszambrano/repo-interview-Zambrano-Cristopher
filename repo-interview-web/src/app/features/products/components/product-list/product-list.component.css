@@ -121,7 +121,6 @@
     align-items: center;
     padding: 1.2rem 1.5rem;
     border-bottom: 1px solid #eef0f3;
-    transition: background 0.2s;
   }
 
   .product-card:hover {
