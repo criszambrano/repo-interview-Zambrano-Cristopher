@@ -184,4 +184,190 @@ describe('ProductListComponent', () => {
 
         expect(window.alert).toHaveBeenCalledWith('Error al eliminar el producto');
     }));
+
+    // TEST: toggleMenu abre menú cuando está cerrado
+    it('should open menu when it is closed', () => {
+        const event = new MouseEvent('click');
+        jest.spyOn(event, 'stopPropagation');
+
+        component.openMenuId.set(null);
+        component.toggleMenu(event, 'trj-crd');
+
+        expect(event.stopPropagation).toHaveBeenCalled();
+        expect(component.openMenuId()).toBe('trj-crd');
+    });
+
+    // TEST: onEdit cierra el menú abierto
+    it('should close menu when editing', () => {
+        component.openMenuId.set('trj-crd');
+        component.onEdit('trj-crd');
+
+        expect(component.openMenuId()).toBeNull();
+        expect(routerMock.navigate).toHaveBeenCalledWith(['/edit', 'trj-crd']);
+    });
+
+    // TEST: openDeleteModal cierra el menú y abre modal
+    it('should close menu when opening delete modal', () => {
+        const event = new MouseEvent('click');
+        jest.spyOn(event, 'stopPropagation');
+
+        component.openMenuId.set('trj-crd');
+        component.openDeleteModal(event, 'trj-crd');
+
+        expect(event.stopPropagation).toHaveBeenCalled();
+        expect(component.openMenuId()).toBeNull();
+        expect(component.deleteCandidate()).toBe('trj-crd');
+    });
+
+    // TEST: goToPage con página válida
+    it('should change to valid page', () => {
+        component.products.set([...mockProducts, ...mockProducts, ...mockProducts]);
+        component.pageSize.set(1);
+
+        component.goToPage(2);
+        expect(component.currentPage()).toBe(2);
+
+        component.goToPage(1);
+        expect(component.currentPage()).toBe(1);
+    });
+
+    // TEST: filteredProducts filtra por ID
+    it('should filter products by ID', fakeAsync(() => {
+        const products = [
+            { ...mockProducts[0], id: 'ABC123', name: 'Producto A', description: 'Descripción A' },
+            { ...mockProducts[0], id: 'XYZ789', name: 'Producto B', description: 'Descripción B' }
+        ];
+        component.products.set(products);
+
+        component.onSearchChange('ABC');
+        tick(300);
+
+        expect(component.filteredProducts().length).toBe(1);
+        expect(component.filteredProducts()[0].id).toBe('ABC123');
+    }));
+
+    // TEST: filteredProducts filtra por description
+    it('should filter products by description', fakeAsync(() => {
+        const products = [
+            { ...mockProducts[0], id: 'P1', name: 'Producto A', description: 'Tarjeta especial' },
+            { ...mockProducts[0], id: 'P2', name: 'Producto B', description: 'Cuenta de ahorro' }
+        ];
+        component.products.set(products);
+
+        component.onSearchChange('especial');
+        tick(300);
+
+        expect(component.filteredProducts().length).toBe(1);
+        expect(component.filteredProducts()[0].description).toBe('Tarjeta especial');
+    }));
+
+    // TEST: filteredProducts retorna todos si el término está vacío
+    it('should return all products when search term is empty', () => {
+        component.products.set(mockProducts);
+        component.searchTerm.set('');
+
+        expect(component.filteredProducts()).toEqual(mockProducts);
+    });
+
+    // TEST: filteredProducts con término solo espacios
+    it('should return all products when search term is only spaces', () => {
+        component.products.set(mockProducts);
+        component.searchTerm.set('   ');
+
+        expect(component.filteredProducts()).toEqual(mockProducts);
+    });
+
+    // TEST: totalResults computed
+    it('should calculate total results correctly', () => {
+        const products = [...mockProducts, ...mockProducts];
+        component.products.set(products);
+        component.searchTerm.set('');
+
+        expect(component.totalResults()).toBe(2);
+    });
+
+    // TEST: totalPages computed
+    it('should calculate total pages correctly', () => {
+        const products = new Array(25).fill(mockProducts[0]);
+        component.products.set(products);
+        component.pageSize.set(10);
+        component.searchTerm.set('');
+
+        expect(component.totalPages()).toBe(3);
+    });
+
+    // TEST: paginatedProducts
+    it('should paginate products correctly', () => {
+        const products = [
+            { ...mockProducts[0], id: 'P1' },
+            { ...mockProducts[0], id: 'P2' },
+            { ...mockProducts[0], id: 'P3' }
+        ];
+        component.products.set(products);
+        component.pageSize.set(2);
+        component.searchTerm.set('');
+        component.currentPage.set(1);
+
+        expect(component.paginatedProducts().length).toBe(2);
+        expect(component.paginatedProducts()[0].id).toBe('P1');
+
+        component.currentPage.set(2);
+        expect(component.paginatedProducts().length).toBe(1);
+        expect(component.paginatedProducts()[0].id).toBe('P3');
+    });
+
+    // TEST: pageNumbers computed
+    it('should generate page numbers array', () => {
+        const products = new Array(25).fill(mockProducts[0]);
+        component.products.set(products);
+        component.pageSize.set(10);
+        component.searchTerm.set('');
+
+        expect(component.pageNumbers()).toEqual([1, 2, 3]);
+    });
+
+    // TEST: onPageSizeChange resetea a página 1
+    it('should reset to page 1 when page size changes', () => {
+        component.currentPage.set(3);
+        component.onPageSizeChange({ target: { value: '20' } } as any);
+
+        expect(component.pageSize()).toBe(20);
+        expect(component.currentPage()).toBe(1);
+    });
+
+    // TEST: searchSubject con debounce no ejecuta inmediatamente
+    it('should debounce search input', fakeAsync(() => {
+        component.onSearchChange('test');
+        expect(component.searchTerm()).toBe('');
+
+        tick(200);
+        expect(component.searchTerm()).toBe('');
+
+        tick(100);
+        expect(component.searchTerm()).toBe('test');
+    }));
+
+    // TEST: searchSubject con distinctUntilChanged
+    it('should not trigger search if value is the same', fakeAsync(() => {
+        component.onSearchChange('test');
+        tick(300);
+        expect(component.searchTerm()).toBe('test');
+
+        const initialPage = component.currentPage();
+        component.currentPage.set(2);
+
+        component.onSearchChange('test');
+        tick(300);
+
+        expect(component.currentPage()).toBe(2);
+    }));
+
+    // TEST: searchSubject resetea a página 1 cuando cambia búsqueda
+    it('should reset to page 1 when search term changes', fakeAsync(() => {
+        component.currentPage.set(3);
+        component.onSearchChange('nuevo término');
+        tick(300);
+
+        expect(component.currentPage()).toBe(1);
+    }));
 });

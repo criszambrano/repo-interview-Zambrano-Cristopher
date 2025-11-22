@@ -1,8 +1,8 @@
-import { ComponentFixture, fakeAsync, TestBed, tick, waitForAsync } from '@angular/core/testing';
+import { ComponentFixture, fakeAsync, TestBed, tick } from '@angular/core/testing';
 import { ProductFormComponent } from './product-form.component';
 import { ProductService } from '../../../../core/services/product.service';
 import { ActivatedRoute, Router } from '@angular/router';
-import { of, Subject, throwError } from 'rxjs';
+import { of, throwError } from 'rxjs';
 
 describe('ProductFormComponent', () => {
     let activatedRouteMock: any;
@@ -438,4 +438,331 @@ describe('ProductFormComponent', () => {
 
         expect(component.errors()['id']).toBe('El ID ya existe');
     }));
+
+    // TEST: Validar longitud de name (mínimo 5 caracteres)
+    it('should validate name min length (5 chars)', async () => {
+        await TestBed.configureTestingModule({
+            imports: [ProductFormComponent],
+            providers: [
+                { provide: ProductService, useValue: productServiceMock },
+                { provide: Router, useValue: routerMock },
+                { provide: ActivatedRoute, useValue: { params: of({}) } }
+            ]
+        }).compileComponents();
+
+        fixture = TestBed.createComponent(ProductFormComponent);
+        component = fixture.componentInstance;
+        fixture.detectChanges();
+
+        component.form.update(f => ({ ...f, name: 'abc' }));
+        component.validateForm();
+        expect(component.errors()['name']).toBe('Requerido, debe tener entre 5 y 100 caracteres');
+
+        component.form.update(f => ({ ...f, name: 'abcde' }));
+        component.validateForm();
+        expect(component.errors()['name']).toBeUndefined();
+    });
+
+    // TEST: Validar longitud de name (máximo 100 caracteres)
+    it('should validate name max length (100 chars)', async () => {
+        await TestBed.configureTestingModule({
+            imports: [ProductFormComponent],
+            providers: [
+                { provide: ProductService, useValue: productServiceMock },
+                { provide: Router, useValue: routerMock },
+                { provide: ActivatedRoute, useValue: { params: of({}) } }
+            ]
+        }).compileComponents();
+
+        fixture = TestBed.createComponent(ProductFormComponent);
+        component = fixture.componentInstance;
+        fixture.detectChanges();
+
+        component.form.update(f => ({ ...f, name: 'a'.repeat(101) }));
+        component.validateForm();
+        expect(component.errors()['name']).toBe('Requerido, debe tener entre 5 y 100 caracteres');
+    });
+
+    // TEST: Validar longitud de description (mínimo 10 caracteres)
+    it('should validate description min length (10 chars)', async () => {
+        await TestBed.configureTestingModule({
+            imports: [ProductFormComponent],
+            providers: [
+                { provide: ProductService, useValue: productServiceMock },
+                { provide: Router, useValue: routerMock },
+                { provide: ActivatedRoute, useValue: { params: of({}) } }
+            ]
+        }).compileComponents();
+
+        fixture = TestBed.createComponent(ProductFormComponent);
+        component = fixture.componentInstance;
+        fixture.detectChanges();
+
+        component.form.update(f => ({ ...f, description: 'short' }));
+        component.validateForm();
+        expect(component.errors()['description']).toBe('Requerido, debe tener entre 10 y 200 caracteres');
+
+        component.form.update(f => ({ ...f, description: 'a'.repeat(10) }));
+        component.validateForm();
+        expect(component.errors()['description']).toBeUndefined();
+    });
+
+    // TEST: Validar longitud de description (máximo 200 caracteres)
+    it('should validate description max length (200 chars)', async () => {
+        await TestBed.configureTestingModule({
+            imports: [ProductFormComponent],
+            providers: [
+                { provide: ProductService, useValue: productServiceMock },
+                { provide: Router, useValue: routerMock },
+                { provide: ActivatedRoute, useValue: { params: of({}) } }
+            ]
+        }).compileComponents();
+
+        fixture = TestBed.createComponent(ProductFormComponent);
+        component = fixture.componentInstance;
+        fixture.detectChanges();
+
+        component.form.update(f => ({ ...f, description: 'a'.repeat(201) }));
+        component.validateForm();
+        expect(component.errors()['description']).toBe('Requerido, debe tener entre 10 y 200 caracteres');
+    });
+
+    // TEST: onFieldChange debe actualizar el campo y validar
+    it('should update field and validate on onFieldChange', async () => {
+        await TestBed.configureTestingModule({
+            imports: [ProductFormComponent],
+            providers: [
+                { provide: ProductService, useValue: productServiceMock },
+                { provide: Router, useValue: routerMock },
+                { provide: ActivatedRoute, useValue: { params: of({}) } }
+            ]
+        }).compileComponents();
+
+        fixture = TestBed.createComponent(ProductFormComponent);
+        component = fixture.componentInstance;
+        fixture.detectChanges();
+
+        component.onFieldChange('name', 'Nuevo nombre producto');
+        expect(component.form().name).toBe('Nuevo nombre producto');
+
+        component.onFieldChange('description', 'Nueva descripción del producto');
+        expect(component.form().description).toBe('Nueva descripción del producto');
+
+        component.onFieldChange('logo', 'https://newlogo.com');
+        expect(component.form().logo).toBe('https://newlogo.com');
+    });
+
+    // TEST: onSubmit en modo edición
+    it('should submit form when valid (edit mode)', async () => {
+        await TestBed.configureTestingModule({
+            imports: [ProductFormComponent],
+            providers: [
+                { provide: ProductService, useValue: productServiceMock },
+                { provide: Router, useValue: routerMock },
+                { provide: ActivatedRoute, useValue: { params: of({}) } }
+            ]
+        }).compileComponents();
+
+        fixture = TestBed.createComponent(ProductFormComponent);
+        component = fixture.componentInstance;
+        fixture.detectChanges();
+        normalizeDates();
+
+        component.isEditMode.set(true);
+        component.productId.set('edit123');
+
+        const today = new Date();
+        today.setHours(0, 0, 0, 0);
+
+        component.form.set({
+            id: 'edit123',
+            name: 'Producto editado',
+            description: 'Descripción del producto editado',
+            logo: 'https://logo.com/edit.png',
+            date_release: today,
+            date_revision: new Date(today.getFullYear() + 1, today.getMonth(), today.getDate())
+        });
+
+        component.onSubmit();
+
+        expect(productServiceMock.update).toHaveBeenCalledWith('edit123', component.form());
+        expect(routerMock.navigate).toHaveBeenCalledWith(['/']);
+    });
+
+    // TEST: onSubmit no debe enviar si el formulario es inválido
+    it('should not submit if form is invalid', async () => {
+        await TestBed.configureTestingModule({
+            imports: [ProductFormComponent],
+            providers: [
+                { provide: ProductService, useValue: productServiceMock },
+                { provide: Router, useValue: routerMock },
+                { provide: ActivatedRoute, useValue: { params: of({}) } }
+            ]
+        }).compileComponents();
+
+        fixture = TestBed.createComponent(ProductFormComponent);
+        component = fixture.componentInstance;
+        fixture.detectChanges();
+
+        component.form.set({
+            id: '',
+            name: '',
+            description: '',
+            logo: '',
+            date_release: new Date(),
+            date_revision: new Date()
+        } as any);
+
+        productServiceMock.create.mockClear();
+
+        component.onSubmit();
+
+        expect(productServiceMock.create).not.toHaveBeenCalled();
+    });
+
+    // TEST: hasErrors computed debe retornar true cuando hay errores
+    it('should have hasErrors true when there are errors', async () => {
+        await TestBed.configureTestingModule({
+            imports: [ProductFormComponent],
+            providers: [
+                { provide: ProductService, useValue: productServiceMock },
+                { provide: Router, useValue: routerMock },
+                { provide: ActivatedRoute, useValue: { params: of({}) } }
+            ]
+        }).compileComponents();
+
+        fixture = TestBed.createComponent(ProductFormComponent);
+        component = fixture.componentInstance;
+        fixture.detectChanges();
+
+        component.errors.set({ id: 'Error de ID' });
+        expect(component.hasErrors()).toBe(true);
+
+        component.errors.set({});
+        expect(component.hasErrors()).toBe(false);
+    });
+
+    // TEST: onIdChange con ID menor a 5 caracteres no debe disparar verificación
+    it('should not trigger ID verification for ID shorter than 5 chars', fakeAsync(() => {
+        TestBed.configureTestingModule({
+            imports: [ProductFormComponent],
+            providers: [
+                { provide: ProductService, useValue: productServiceMock },
+                { provide: Router, useValue: routerMock },
+                { provide: ActivatedRoute, useValue: { params: of({}) } }
+            ]
+        }).compileComponents();
+
+        productServiceMock.verifyId.mockClear();
+
+        fixture = TestBed.createComponent(ProductFormComponent);
+        component = fixture.componentInstance;
+        fixture.detectChanges();
+
+        component.onIdChange('AB');
+        tick(1000);
+
+        expect(productServiceMock.verifyId).not.toHaveBeenCalled();
+    }));
+
+    // TEST: Validación de date_release sin valor
+    it('should validate date_release is required', fakeAsync(() => {
+        TestBed.configureTestingModule({
+            imports: [ProductFormComponent],
+            providers: [
+                { provide: ProductService, useValue: productServiceMock },
+                { provide: Router, useValue: routerMock },
+                { provide: ActivatedRoute, useValue: { params: of({}) } }
+            ]
+        }).compileComponents();
+
+        fixture = TestBed.createComponent(ProductFormComponent);
+        component = fixture.componentInstance;
+        fixture.detectChanges();
+        tick();
+
+        component.form.update(f => ({ ...f, date_release: null as any }));
+        component.validateForm();
+
+        expect(component.errors()['date_release']).toBeDefined();
+    }));
+
+    // TEST: Validación de date_revision sin valor
+    it('should validate date_revision is required', fakeAsync(() => {
+        TestBed.configureTestingModule({
+            imports: [ProductFormComponent],
+            providers: [
+                { provide: ProductService, useValue: productServiceMock },
+                { provide: Router, useValue: routerMock },
+                { provide: ActivatedRoute, useValue: { params: of({}) } }
+            ]
+        }).compileComponents();
+
+        fixture = TestBed.createComponent(ProductFormComponent);
+        component = fixture.componentInstance;
+        fixture.detectChanges();
+        tick();
+
+        component.form.update(f => ({ ...f, date_revision: null as any }));
+        component.validateForm();
+
+        expect(component.errors()['date_revision']).toBeDefined();
+    }));
+
+    // TEST: Manejar error general (no duplicado) en onSubmit
+    it('should handle non-duplicate error on submit', fakeAsync(() => {
+        productServiceMock.create.mockReturnValue(
+            throwError(() => ({ status: 500, error: { message: 'Server error' } }))
+        );
+
+        TestBed.configureTestingModule({
+            imports: [ProductFormComponent],
+            providers: [
+                { provide: ProductService, useValue: productServiceMock },
+                { provide: Router, useValue: routerMock },
+                { provide: ActivatedRoute, useValue: { params: of({}) } }
+            ]
+        }).compileComponents();
+
+        fixture = TestBed.createComponent(ProductFormComponent);
+        component = fixture.componentInstance;
+        fixture.detectChanges();
+        normalizeDates();
+
+        const today = new Date();
+        today.setHours(0, 0, 0, 0);
+
+        component.form.set({
+            id: 'test123',
+            name: 'Producto válido',
+            description: 'Descripción suficientemente larga',
+            logo: 'https://logo.com/img.png',
+            date_release: today,
+            date_revision: new Date(today.getFullYear() + 1, today.getMonth(), today.getDate())
+        });
+
+        component.onSubmit();
+        tick();
+
+        expect(routerMock.navigate).not.toHaveBeenCalled();
+    }));
+
+    // TEST: onIdChange debe hacer trim del valor
+    it('should trim ID value on onIdChange', async () => {
+        await TestBed.configureTestingModule({
+            imports: [ProductFormComponent],
+            providers: [
+                { provide: ProductService, useValue: productServiceMock },
+                { provide: Router, useValue: routerMock },
+                { provide: ActivatedRoute, useValue: { params: of({}) } }
+            ]
+        }).compileComponents();
+
+        fixture = TestBed.createComponent(ProductFormComponent);
+        component = fixture.componentInstance;
+        fixture.detectChanges();
+
+        component.onIdChange('  test123  ');
+        expect(component.form().id).toBe('test123');
+    });
 });

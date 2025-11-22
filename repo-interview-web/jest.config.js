@@ -1,0 +1,43 @@
+module.exports = {
+  preset: 'jest-preset-angular',
+  testEnvironment: 'jsdom',
+  setupFilesAfterEnv: ['<rootDir>/setup-jest.ts'],
+  rootDir: '.',
+  testMatch: ['<rootDir>/src/**/*.spec.ts'],
+  maxWorkers: 1,
+  resetMocks: false,
+  resetModules: false,
+  transform: {
+    '^.+\\.(ts|js|html)$': [
+      'jest-preset-angular',
+      {
+        tsconfig: '<rootDir>/tsconfig.spec.json',
+        stringifyContentPathRegex: '\\.(html|svg)$',
+      },
+    ],
+  },
+  collectCoverageFrom: [
+    'src/**/*.ts',
+    '!src/**/*.spec.ts',
+    '!src/**/*.interface.ts',
+    '!src/**/*.module.ts',
+    '!src/**/*.routes.ts',
+    '!src/**/*.config.ts',
+    '!src/**/*.config.*.ts',
+    '!src/**/*.routing-module.ts',
+    '!src/main.ts',
+    '!src/main.server.ts',
+    '!src/server.ts',
+    '!src/app/app.ts',
+    '!src/app/app.routes.server.ts',
+    '!src/app/core/http/**',
+    '!src/app/shared/components/layout/**',
+    '!src/environments/**',
+  ],
+  coverageDirectory: '<rootDir>/coverage',
+  coverageReporters: ['html', 'text', 'lcov', 'json'],
+  moduleNameMapper: {
+    '^@app/(.*)$': '<rootDir>/src/app/$1',
+  },
+  transformIgnorePatterns: ['node_modules/(?!.*\\.mjs$)'],
+};
