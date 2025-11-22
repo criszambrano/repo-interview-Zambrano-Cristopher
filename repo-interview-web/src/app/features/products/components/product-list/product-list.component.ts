@@ -142,5 +142,4 @@ export class ProductListComponent implements OnInit {
       this.currentPage.set(page);
     }
   }
-
 }
